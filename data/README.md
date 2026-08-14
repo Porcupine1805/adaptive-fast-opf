@@ -3,7 +3,7 @@
 | Path | Use | Tracked |
 |---|---|---|
 | `benchmark/DB1.txt` ... `DB8.txt` | Main OPF/HJ benchmark | Yes |
-| `DB9/` | RQ6, 400 financial series | Yes |
+| `DB9/` | **Out of scope** for Adaptive Fast OPF manuscript (do not use) | No |
 | `synthetic/fom_hypothesis_probe/` | BM/WB mechanism probes | Yes |
 | `smoke/DB1.txt` | Fast CI fixture | Yes |
 | `electricity_raw/` | UCI raw download | No |

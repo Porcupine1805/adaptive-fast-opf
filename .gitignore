@@ -2,11 +2,20 @@ build/
 *.class
 .idea/
 *.iml
+.DS_Store
+*.log
+
+# Generated / bulk experiment outputs
 results/runs/
 results/validation/
 results/manuscript/*/raw/
 results/manuscript/*/warmup/
 results/manuscript/*/logs/
 results/manuscript/*/summaries/
-*.log
-.DS_Store
+
+# Out of scope for Adaptive Fast OPF manuscript (do not track)
+data/DB9/
+scripts/rq6/
+requirements-rq6.txt
+src/rq6/
+legacy/rq6/
