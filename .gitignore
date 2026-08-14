@@ -1,0 +1,12 @@
+build/
+*.class
+.idea/
+*.iml
+results/runs/
+results/validation/
+results/manuscript/*/raw/
+results/manuscript/*/warmup/
+results/manuscript/*/logs/
+results/manuscript/*/summaries/
+*.log
+.DS_Store

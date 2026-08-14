@@ -1,0 +1,6 @@
+dataset,path,description,upstream,redistribution_status
+DB1-DB8,data/benchmark,Financial series used by OPF-Miner,https://github.com/wuc567/Pattern-Mining/tree/master/OPF-Miner,REVIEW_REQUIRED
+DB9,data/DB9,400 financial time-series used by RQ6,Project handover data,REVIEW_REQUIRED
+FOM hypothesis probe,data/synthetic/fom_hypothesis_probe,Deterministically generated mechanism probes,GenerateFOMHypothesisDatasets.java,GENERATED_BY_PROJECT
+Smoke fixture,data/smoke/DB1.txt,DB1 fixture used by CI,Same provenance as DB1-DB8,REVIEW_REQUIRED
+ElectricityLoadDiagrams20112014,not bundled,UCI electricity consumption data,https://archive.ics.uci.edu/dataset/321/electricityloaddiagrams20112014,DOWNLOAD_AND_PREPROCESS

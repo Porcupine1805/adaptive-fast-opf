@@ -56,19 +56,26 @@ Data: `data\benchmark\DB1.txt` … `DB8.txt`.
 New-Item -ItemType Directory -Force -Path results | Out-Null
 ```
 
-### 1) OPF-style baseline
+### 1) OPF-Miner baseline (V0)
+
+Compile baseline + Adaptive sources:
+
+```powershell
+javac -encoding UTF-8 -d build\classes\benchmark `
+  src\benchmark\java\OPF_Miner_Original.java `
+  src\benchmark\java\FOMAblationFlags.java
+```
 
 ```powershell
 java -Xmx2g `
   -Dinput=data/benchmark `
   "-DfileRegex=DB4\.txt" `
   -DminsupList=2,4 `
-  -Dmode=baseline `
-  -DbitmapPolicy=never `
-  -DwsbPolicy=never `
   -Doutput=results/out_opf.csv `
-  -cp build/classes/benchmark FOMAblationFlags
+  -cp build/classes/benchmark OPF_Miner_Original
 ```
+
+Source: `src/benchmark/java/OPF_Miner_Original.java` (original OPF-Miner algorithm + timing CSV).
 
 ### 2) HJ-only
 
@@ -117,12 +124,13 @@ Optional knobs:
 
 ## Modes (ablation)
 
-| Name | `-Dmode` | Notes |
-|------|----------|--------|
-| OPF | `baseline` | No HJ |
-| HJ-only | `hash_only` | Stage 1 only |
-| Adaptive | `adaptive` | Staged HJ + CPC + Gallop |
-| Full (legacy static) | `full` | Static enable — **not** the Adaptive claim |
+| Name | How to run | Notes |
+|------|------------|--------|
+| **V0 OPF-Miner** | class `OPF_Miner_Original` | Official baseline (no HJ) |
+| V1 HJ-only | `-Dmode=hash_only` on `FOMAblationFlags` | Stage 1 only |
+| V2 HJ+CPC | `-Dmode=adaptive` + gate C, Gallop off | See manuscript script |
+| V3 Adaptive | `-Dmode=adaptive` (defaults) | Staged HJ + CPC + Gallop |
+| Full (legacy) | `-Dmode=full` | Static enable — **not** the paper claim |
 
 ---
 
