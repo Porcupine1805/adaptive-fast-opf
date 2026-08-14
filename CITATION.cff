@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software or experimental artifact, please cite it."
+title: "FastOPF-Miner: A Multi-Strategy Optimization Framework for Forgetting-Aware Order-Preserving Pattern Mining"
+type: software
+version: 2.0.0
+date-released: 2026-08-13
+authors:
+  - family-names: Nguyen
+    given-names: Khac-Chien
+  - family-names: Tran
+    given-names: Cong-Phat
+  - family-names: Bui
+    given-names: Nhut-Minh
+keywords:
+  - order-preserving pattern mining
+  - forgetting-aware support
+  - hash join
+  - bitmap
+  - reproducible benchmark

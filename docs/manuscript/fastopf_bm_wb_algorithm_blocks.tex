@@ -1,0 +1,69 @@
+% Requires:
+% \usepackage{algorithm}
+% \usepackage{algpseudocode}
+
+\begin{algorithm}[t]
+\caption{FastOPF-BM: Bitmap-based order-preserving fusion}
+\label{alg:fastopf-bm}
+\begin{algorithmic}[1]
+\Require Time series $S=(s_1,\ldots,s_n)$, minimum support threshold $\theta$, forgetting weights $w_i=\exp(-k(n-i))$
+\Ensure Frequent order-preserving patterns with weighted supports
+\State Generate the frequent length-2 pattern set $\mathcal{L}_2$ from adjacent rank relations in $S$
+\ForAll{$P \in \mathcal{L}_2$}
+    \State Construct an occurrence bitmap $B_P$ and compute its weighted support $\sigma(P)$
+\EndFor
+\State $m \gets 2$
+\While{$\mathcal{L}_m \neq \emptyset$}
+    \State $\mathcal{L}_{m+1} \gets \emptyset$
+    \State Build a prefix index $\mathcal{H}$ where $\mathcal{H}[\operatorname{prefix}(Q)]$ stores each $Q \in \mathcal{L}_m$
+    \ForAll{$P \in \mathcal{L}_m$}
+        \State $\mathcal{C} \gets \mathcal{H}[\operatorname{suffix}(P)]$
+        \ForAll{$Q \in \mathcal{C}$}
+            \State $R \gets \operatorname{Fuse}(P,Q)$
+            \If{$R$ is not order-preserving compatible}
+                \State \textbf{continue}
+            \EndIf
+            \State $B_R \gets \operatorname{Shift}(B_P,1) \wedge B_Q$
+            \State $\sigma(R) \gets \sum_{i:B_R[i]=1} w_i$
+            \If{$\sigma(R) \geq \theta$}
+                \State Insert $R$ into $\mathcal{L}_{m+1}$ with bitmap $B_R$ and support $\sigma(R)$
+            \EndIf
+        \EndFor
+    \EndFor
+    \State Output all patterns in $\mathcal{L}_{m+1}$ and their supports
+    \State $m \gets m+1$
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[t]
+\caption{FastOPF-WB: Weighted-bound pruning for order-preserving fusion}
+\label{alg:fastopf-wb}
+\begin{algorithmic}[1]
+\Require Frequent pattern set $\mathcal{L}_m$, minimum support threshold $\theta$, occurrence summaries for each pattern
+\Ensure Candidate fusions whose weighted upper bound can still reach $\theta$
+\State Build a prefix index $\mathcal{H}$ over $\mathcal{L}_m$
+\State $\mathcal{L}_{m+1} \gets \emptyset$
+\ForAll{$P \in \mathcal{L}_m$}
+    \State $\mathcal{C} \gets \mathcal{H}[\operatorname{suffix}(P)]$
+    \ForAll{$Q \in \mathcal{C}$}
+        \State $R \gets \operatorname{Fuse}(P,Q)$
+        \If{$R$ is not order-preserving compatible}
+            \State \textbf{continue}
+        \EndIf
+        \State $U_P \gets \operatorname{WeightedSupport}(\operatorname{Shift}(\operatorname{Occ}(P),1))$
+        \State $U_Q \gets \operatorname{WeightedSupport}(\operatorname{Occ}(Q))$
+        \State $\operatorname{UB}(R) \gets \min(U_P,U_Q)$
+        \If{$\operatorname{UB}(R) < \theta$}
+            \State \textbf{continue} \Comment{$R$ cannot be frequent}
+        \EndIf
+        \State $\operatorname{Occ}(R) \gets \operatorname{Shift}(\operatorname{Occ}(P),1) \cap \operatorname{Occ}(Q)$
+        \State $\sigma(R) \gets \operatorname{WeightedSupport}(\operatorname{Occ}(R))$
+        \If{$\sigma(R) \geq \theta$}
+            \State Insert $R$ into $\mathcal{L}_{m+1}$ with support $\sigma(R)$
+        \EndIf
+    \EndFor
+\EndFor
+\State \Return $\mathcal{L}_{m+1}$
+\end{algorithmic}
+\end{algorithm}
