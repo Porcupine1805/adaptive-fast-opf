@@ -7,7 +7,8 @@
 - Renamed main class: `FOMAblationFlags` → `HJOPF`.
 - Moved historical bitmap implementation to `legacy/FOM_bitmap_legacy.java`.
 - Rewrote README and CITATION.cff to match paper title.
-- Simplified `tools/build.ps1` to the two publication sources.
+- Simplified `tools/build.ps1` / added `tools/build.sh`.
+- Removed internal draft docs and outdated audits from the publication tree.
 
 ## Earlier
 
