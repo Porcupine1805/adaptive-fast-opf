@@ -1,159 +1,105 @@
-# Adaptive Fast OPF
+# HJ-OPF
 
-Exact acceleration of **OPF-Miner** (order-preserving patterns with exponential forgetting) via a **three-stage** pipeline:
+**Output-Sensitive Hash-Indexed Join for Order-Preserving Pattern Mining with Forgetting Mechanism**
 
-| Stage | Technique | Role |
-|-------|-----------|------|
-| **1** | **HJ** — Hash-Indexed Join | Output-sensitive compatible pair discovery |
-| **2** | **CPC** — Cheap-Prune Cascade | Pre-fusion residual / span / card bounds (optional range) |
-| **3** | **Sorted List or Gallop** | Occurrence fusion; Gallop only under length skew |
+This repository contains the reference implementation and experimental artifact for the paper:
 
-**Adaptive Fast OPF** always runs HJ, then enables CPC / Gallop only from **problem quantities** (series length, minSup, pair mass, residual structure, skew)—not wall-clock timers.
+> Nguyen, K.-C., Bui, N.-M., Tran, C.-P.  
+> *HJ-OPF: Output-Sensitive Hash-Indexed Join for Order-Preserving Pattern Mining with Forgetting Mechanism*
 
-> **Bitmap is not a paper contribution.** The fusion path is list-based (`SPARSE=false`). Prefer `-DbitmapPolicy=never`.
+HJ-OPF replaces the quadratic group scan of OPF-Miner with an output-sensitive hash-indexed join on the same normalized prefix/suffix keys. Compatible pairs are emitted in expected Θ(L + J) time; the original fusion and forgetting-aware support are then applied unchanged. Semantic equivalence follows from the completeness of GP-Fusion together with soundness and completeness of the join.
 
-Property names still use the historical prefix `adaptiveWsb*` for CPC (WSB was replaced by CPC).
-
-Repo: https://github.com/Porcupine1805/adaptive-fast-opf
+Residual operators (cheap pre-fusion bounds / CPC, galloping intersection, adaptive enablement) are implemented for controlled ablation only. Relative to pure HJ-OPF they change the matrix mean by only a few percent and are **not** a primary claim of the paper.
 
 ---
 
 ## Requirements
 
-- JDK 11+ (`java -version`, `javac -version`)
-- Windows: PowerShell in VS Code / Terminal
-- Linux/macOS: bash
+- JDK 11 or later (`java -version`, `javac -version`)
 
 ---
 
-## Clone & open
+## Quick start
 
-```powershell
-git clone https://github.com/Porcupine1805/adaptive-fast-opf.git
-cd adaptive-fast-opf
+```bash
+git clone https://github.com/Porcupine1805/HJ-OPF.git
+cd HJ-OPF
+
+# Compile
+mkdir -p build/classes/benchmark
+javac -encoding UTF-8 -d build/classes/benchmark \
+  src/benchmark/java/OPF_Miner_Original.java \
+  src/benchmark/java/HJOPF.java
 ```
 
-VS Code: **File → Open Folder** → `adaptive-fast-opf`.
+### 1. OPF-Miner baseline
 
----
-
-## Compile
-
-```powershell
-New-Item -ItemType Directory -Force -Path build\classes\benchmark | Out-Null
-javac -encoding UTF-8 -d build\classes\benchmark src\benchmark\java\FOMAblationFlags.java
-```
-
-Or: `powershell -NoProfile -ExecutionPolicy Bypass -File tools\build.ps1`
-
----
-
-## Main configurations
-
-Data: `data\benchmark\DB1.txt` … `DB8.txt`.
-
-```powershell
-New-Item -ItemType Directory -Force -Path results | Out-Null
-```
-
-### 1) OPF-Miner baseline (V0)
-
-Compile baseline + Adaptive sources:
-
-```powershell
-javac -encoding UTF-8 -d build\classes\benchmark `
-  src\benchmark\java\OPF_Miner_Original.java `
-  src\benchmark\java\FOMAblationFlags.java
-```
-
-```powershell
-java -Xmx2g `
-  -Dinput=data/benchmark `
-  "-DfileRegex=DB4\.txt" `
-  -DminsupList=2,4 `
-  -Doutput=results/out_opf.csv `
+```bash
+java -Xmx2g \
+  -Dinput=data/benchmark \
+  -DfileRegex='DB4\.txt' \
+  -DminsupList=2,4 \
+  -Doutput=results/out_opf.csv \
   -cp build/classes/benchmark OPF_Miner_Original
 ```
 
-Source: `src/benchmark/java/OPF_Miner_Original.java` (original OPF-Miner algorithm + timing CSV).
+### 2. HJ-OPF only (primary claim)
 
-### 2) HJ-only
-
-```powershell
-java -Xmx2g `
-  -Dinput=data/benchmark `
-  "-DfileRegex=DB4\.txt" `
-  -DminsupList=2,4 `
-  -Dmode=hash_only `
-  -DbitmapPolicy=never `
-  -DwsbPolicy=never `
-  -Doutput=results/out_hj.csv `
-  -cp build/classes/benchmark FOMAblationFlags
+```bash
+java -Xmx2g \
+  -Dinput=data/benchmark \
+  -DfileRegex='DB4\.txt' \
+  -DminsupList=2,4 \
+  -Dmode=hash_only \
+  -DbitmapPolicy=never \
+  -DwsbPolicy=never \
+  -Doutput=results/out_hj.csv \
+  -cp build/classes/benchmark HJOPF
 ```
 
-### 3) Adaptive Fast OPF (HJ → CPC? → Gallop?)
+### 3. Residual ablation (not a primary claim)
 
-When `-Dmode=adaptive`, defaults enable CPC, smart intersect (Gallop eligible), staged policy, and `bitmapPolicy=never`.
-
-```powershell
-java -Xmx2g `
-  -Dinput=data/benchmark `
-  "-DfileRegex=DB4\.txt" `
-  -DminsupList=2,4 `
-  -Dmode=adaptive `
-  -DbitmapPolicy=never `
-  -DwsbPolicy=cost `
-  -Doutput=results/out_adaptive.csv `
-  -cp build/classes/benchmark FOMAblationFlags
+```bash
+java -Xmx2g \
+  -Dinput=data/benchmark \
+  -DfileRegex='DB4\.txt' \
+  -DminsupList=2,4 \
+  -Dmode=adaptive \
+  -DbitmapPolicy=never \
+  -DwsbPolicy=cost \
+  -Doutput=results/out_residual.csv \
+  -cp build/classes/benchmark HJOPF
 ```
 
-Optional knobs:
+---
+
+## Repository layout
 
 ```text
--DadaptiveWsbCheapPrune=true
--DadaptiveSmartIntersect=true
--DadaptiveStagedPolicy=true
--DadaptiveGallopWithoutCpc=true
--DadaptiveCpcGate=B
--DadaptiveGallopMinRatio=2
--DadaptiveGallopMinOcc=64
--DadaptiveGallopMinSkewFraction=0.08
+src/benchmark/java/
+  OPF_Miner_Original.java   # baseline OPF-Miner
+  HJOPF.java                # HJ-OPF + residual ablation harness
+data/benchmark/             # DB1.txt … DB8.txt (financial suite)
+data/electricity_scale/     # ELEC_01/05/10 concatenations used in the paper
+scripts/                    # benchmark, validation, analysis helpers
+tools/                      # build and environment capture
+docs/                       # reproducibility notes
 ```
 
----
-
-## Modes (ablation)
-
-| Name | How to run | Notes |
-|------|------------|--------|
-| **V0 OPF-Miner** | class `OPF_Miner_Original` | Official baseline (no HJ) |
-| V1 HJ-only | `-Dmode=hash_only` on `FOMAblationFlags` | Stage 1 only |
-| V2 HJ+CPC | `-Dmode=adaptive` + gate C, Gallop off | See manuscript script |
-| V3 Adaptive | `-Dmode=adaptive` (defaults) | Staged HJ + CPC + Gallop |
-| Full (legacy) | `-Dmode=full` | Static enable — **not** the paper claim |
+Electricity raw archive is not shipped; the pre-concatenated scale files used in the manuscript are included under `data/electricity_scale/`.
 
 ---
 
-## Correctness check
+## Correctness
 
-Add `-Dcanonical=results/canonical_run` and compare dumps across baseline / hash_only / adaptive.
+Add `-Dcanonical=results/canonical_run` and compare pattern-support dumps across baseline / `hash_only` / residual modes. They must be identical.
 
 ---
 
-## Repo layout
+## Citation
 
-```text
-src/benchmark/java/FOMAblationFlags.java
-data/benchmark/DB1.txt … DB8.txt
-docs/ADAPTIVE_FASTOPF_HANDOFF.md
-docs/Adaptive_FastOPF_Manuscript_Draft.md
-docs/ADAPTIVE_MECHANISM.md
-README.md
-tools/build.ps1
-```
-
-Electricity (ELEC_*) is not shipped; set `-Dinput=` locally.
+See `CITATION.cff`. When the paper is published, please cite the journal version; until then cite this repository.
 
 ## License
 
-See `LICENSE_PENDING.md`.
+See `LICENSE_PENDING.md` (authors will replace with a chosen open-source license before final release).
