@@ -1,19 +1,20 @@
 cff-version: 1.2.0
 message: "If you use this software or experimental artifact, please cite it."
-title: "FastOPF-Miner: A Multi-Strategy Optimization Framework for Forgetting-Aware Order-Preserving Pattern Mining"
+title: "HJ-OPF: Output-Sensitive Hash-Indexed Join for Order-Preserving Pattern Mining with Forgetting Mechanism"
 type: software
-version: 2.0.0
-date-released: 2026-08-13
+version: 1.0.0
+date-released: 2026-08-21
 authors:
   - family-names: Nguyen
     given-names: Khac-Chien
-  - family-names: Tran
-    given-names: Cong-Phat
   - family-names: Bui
     given-names: Nhut-Minh
+  - family-names: Tran
+    given-names: Cong-Phat
 keywords:
   - order-preserving pattern mining
-  - forgetting-aware support
+  - forgetting mechanism
   - hash join
-  - bitmap
-  - reproducible benchmark
+  - output-sensitive algorithms
+  - time series
+repository-code: "https://github.com/Porcupine1805/HJ-OPF"
