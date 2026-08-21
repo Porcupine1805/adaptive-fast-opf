@@ -22,13 +22,18 @@ Residual operators (cheap pre-fusion bounds / CPC, galloping intersection, adapt
 ## Quick start
 
 ```bash
-git clone https://github.com/Porcupine1805/HJ-OPF.git
-cd HJ-OPF
+git clone https://github.com/Porcupine1805/HJ-OPF.git   # after you rename the repo
+# or until renamed:
+git clone https://github.com/Porcupine1805/adaptive-fast-opf.git
+cd adaptive-fast-opf   # or HJ-OPF
 
-# Compile
+# Compile (Linux/macOS)
+bash tools/build.sh
+# or manually:
 mkdir -p build/classes/benchmark
 javac -encoding UTF-8 -d build/classes/benchmark \
   src/benchmark/java/OPF_Miner_Original.java \
+  src/benchmark/java/FOMAblationFlags.java \
   src/benchmark/java/HJOPF.java
 ```
 
@@ -78,12 +83,14 @@ java -Xmx2g \
 ```text
 src/benchmark/java/
   OPF_Miner_Original.java   # baseline OPF-Miner
-  HJOPF.java                # HJ-OPF + residual ablation harness
+  HJOPF.java                # paper entry point (recommended)
+  FOMAblationFlags.java     # full implementation (historical name)
 data/benchmark/             # DB1.txt … DB8.txt (financial suite)
 data/electricity_scale/     # ELEC_01/05/10 concatenations used in the paper
 scripts/                    # benchmark, validation, analysis helpers
-tools/                      # build and environment capture
-docs/                       # reproducibility notes
+tools/                      # build.sh / build.ps1 and environment capture
+docs/                       # reproducibility and algorithm notes
+legacy/                     # historical code (not part of paper claims)
 ```
 
 Electricity raw archive is not shipped; the pre-concatenated scale files used in the manuscript are included under `data/electricity_scale/`.
