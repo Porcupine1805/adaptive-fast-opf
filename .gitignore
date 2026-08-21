@@ -13,9 +13,8 @@ results/manuscript/*/warmup/
 results/manuscript/*/logs/
 results/manuscript/*/summaries/
 
-# Out of scope for Adaptive Fast OPF manuscript (do not track)
+# Out of scope
 data/DB9/
 scripts/rq6/
-requirements-rq6.txt
 src/rq6/
 legacy/rq6/

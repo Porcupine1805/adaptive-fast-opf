@@ -1,15 +1,15 @@
 # Changelog
 
-## 2026-08-14 — Align repo with Adaptive Fast OPF narrative
+## 2026-08-21 — Align repository with HJ-OPF paper
 
-- Paper stages: **HJ → CPC → Sorted List / Gallop**; Adaptive staging after HJ.
-- **CPC replaces WSB** in the research story (property names still `adaptiveWsb*` for compatibility).
-- **Bitmap demoted**: `SPARSE=false`; default `bitmapPolicy=never`.
-- Defaults when `-Dmode=adaptive`: CPC on, smart intersect on, `adaptiveGallopWithoutCpc` on, staged policy on.
-- Default `mode` changed to `adaptive` (override with `-Dmode=hash_only` / `baseline` / `full`).
-- Docs: README, ADAPTIVE_MECHANISM, HANDOFF, manuscript draft refreshed.
+- Primary claim: **HJ-OPF** (`mode=hash_only`).
+- Residual ablation (CPC / Gallop / adaptive) retained for controlled experiments only; not a primary claim.
+- Renamed main class: `FOMAblationFlags` → `HJOPF`.
+- Moved historical bitmap implementation to `legacy/FOM_bitmap_legacy.java`.
+- Rewrote README and CITATION.cff to match paper title.
+- Simplified `tools/build.ps1` to the two publication sources.
 
 ## Earlier
 
-- Hash-indexed join ablation harness (`FOMAblationFlags`).
+- Hash-indexed join ablation harness.
 - Pilot scripts and DB1–DB8 benchmark data layout.
